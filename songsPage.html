@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Songs For You 🎵</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Montserrat:wght@200;300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050508;
+  --gold: #D4AF37;
+  --gold-light: #F5E5A0;
+  --text: #F9F6EE;
+  --muted: #777;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  height: 100%;
+  overflow: hidden;
+}
+
+
+body{
+    opacity:0;
+    animation: pageFadeIn 1s ease forwards;
+}
+
+@keyframes pageFadeIn{
+    from{
+        opacity:0;
+    }
+    to{
+        opacity:1;
+    }
+}
+/* BG */
+#aurora {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 25%, rgba(106,13,173,0.3) 0%, transparent 50%),
+    radial-gradient(circle at 85% 75%, rgba(0,212,255,0.2) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255,0,127,0.15) 0%, transparent 60%);
+  filter: blur(80px); opacity: 0.8;
+}
+#stars-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+.page {
+  position: relative; z-index: 2;
+  height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+
+header { text-align: center; margin-bottom: 1.5rem; animation: fadeDown 1.2s ease both; }
+.kicker { font-size: 0.68rem; letter-spacing: 0.4em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.6rem; }
+.title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.6rem, 5vw, 3rem); font-weight: 800;
+  background: linear-gradient(180deg, #fff 0%, #888 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.1; margin-bottom: 0.5rem;
+}
+.sub { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+
+/* Carousel stage */
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: clamp(320px, 50vh, 420px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+.track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+/* Card */
+.card-wrap {
+  position: absolute;
+  width: clamp(190px, 26vw, 240px);
+  height: clamp(280px, 36vw, 320px);
+  border-radius: 20px;
+  background: rgba(15,15,25,0.75);
+  border: 1px solid rgba(245, 237, 15, 0.881);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+  /* padding: 1.4rem 1.1rem 1.1rem; */
+  display: flex; flex-direction: column;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.25,1,0.5,1), opacity 0.6s, filter 0.6s, box-shadow 0.4s;
+  will-change: transform, opacity, filter;
+  overflow: hidden;
+}
+.card-wrap.bobbing { animation: bob 4s ease-in-out infinite; }
+
+/* Reveal zone — top portion, contains scratch overlay */
+.reveal-zone {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.4rem;
+  overflow: visible;
+}
+
+/* Player zone — bottom, always visible & clickable */
+.player-zone {
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
+  position: relative; z-index: 10;
+  padding-top: 0.6rem;
+}
+
+/* Scratch overlay — only covers reveal-zone */
+.scratch-layer{
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  z-index:30;
+}
+.scratch-cv { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; display: block; }
+.hint { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; pointer-events: none; }
+.hint-icon { font-size: 1.7rem; animation: wiggle 2.5s ease infinite; }
+.hint-txt { font-size: 0.62rem; letter-spacing: 0.22em; color: rgba(255,255,255,0.6); text-transform: uppercase; }
+
+/* Inner */
+.track-badge { font-size: 0.6rem; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; }
+.vinyl {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: radial-gradient(circle at 48% 48%, #1a1a2e 30%, #0a0a12 60%, #1a1a2e 100%);
+  border: 2px solid rgba(212,175,55,0.3);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; margin: 0.4rem 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.vinyl::before {
+  content: ''; position: absolute; inset: 7px; border-radius: 50%;
+  background: repeating-radial-gradient(circle at center, rgba(255,255,255,0.03) 0px, transparent 3px, rgba(255,255,255,0.02) 4px, transparent 6px);
+}
+.vinyl-center { width: 11px; height: 11px; border-radius: 50%; background: var(--gold); opacity: 0.85; z-index: 1; }
+.vinyl.spinning { animation: spin 3s linear infinite; }
+
+.song-name { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+.song-artist { font-size: 0.7rem; color: var(--muted); }
+
+.mini-player { width: 100%; margin-top: 0.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.45rem; }
+.play-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: transparent; border: 1px solid rgba(212,175,55,0.4);
+  color: var(--gold); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s;
+}
+.play-btn:hover, .play-btn.on { background: rgba(212,175,55,0.15); border-color: var(--gold); box-shadow: 0 0 14px rgba(212,175,55,0.35); }
+.prog-wrap { width: 88%; height: 3px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; cursor: pointer; }
+.prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 10px; transition: width 0.2s linear; }
+.time-txt { font-size: 0.6rem; color: var(--muted); }
+
+/* Nav arrows */
+.nav-arrow {
+  position: absolute; z-index: 50;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(20,20,25,0.6); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #fff; transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.nav-arrow:hover { background: rgba(255,255,255,0.15); border-color: var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.3); }
+.nav-arrow.left  { left: 0.5rem; }
+.nav-arrow.right { right: 0.5rem; }
+
+/* Dots */
+.dots { display: flex; gap: 0.4rem; margin-top: 1.5rem; flex-wrap: wrap; justify-content: center; max-width: 90%; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: all 0.3s; cursor: pointer; }
+.dot.active { background: var(--gold); box-shadow: 0 0 8px rgba(212,175,55,0.6); transform: scale(1.3); }
+.dot.opened { background: rgba(212,175,55,0.4); }
+
+/* Now playing */
+#np-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: rgba(6,6,10,0.97); backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(212,175,55,0.12);
+  padding: 0.7rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+  transform: translateY(100%); transition: transform 0.45s cubic-bezier(0.25,1,0.5,1);
+}
+#np-bar.show { transform: translateY(0); }
+.np-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 1.4s ease infinite; flex-shrink: 0; }
+.np-info { flex: 1; min-width: 0; }
+.np-name { font-family: 'Cinzel', serif; font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-artist { font-size: 0.64rem; color: var(--muted); }
+
+@keyframes bob { 0%,100%{transform-origin:center; } }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.6)} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes wiggle { 0%,100%{transform:rotate(-14deg)} 50%{transform:rotate(14deg)} }
+@keyframes goldPop {
+  0%   { box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
+  50%  { box-shadow: 0 0 50px rgba(212,175,55,0.6), 0 0 100px rgba(212,175,55,0.2); }
+  100% { box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
+}
+
+.birthday-popup{
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.85);
+
+    display:none;
+    justify-content:center;
+    align-items:center;
+
+    z-index:99999;
+
+    backdrop-filter:blur(10px);
+}
+
+.popup-card{
+
+    width:min(90%,400px);
+    max-height:80vh;
+
+    overflow-y:auto;
+
+    padding:30px;
+
+    border-radius:25px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #111,
+        #1d1d1d
+    );
+
+    border:1px solid #D4AF37;
+
+    text-align:center;
+
+    box-shadow:
+    0 0 40px rgba(212,175,55,.3);
+}
+
+.popup-card h2{
+    color:#D4AF37;
+    margin-bottom:20px;
+}
+
+.popup-card p{
+    color:white;
+    line-height:2;
+    margin-bottom:12px;
+    font-size:15px;
+}
+
+.highlight{
+    color:#D4AF37;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.signature{
+    margin-top:15px;
+    color:#D4AF37;
+    font-weight:bold;
+}
+
+#closePopup{
+    float:right;
+    font-size:30px;
+    cursor:pointer;
+    color:white;
+}
+
+</style>
+</head>
+<body>
+
+<div id="aurora"></div>
+<canvas id="stars-canvas"></canvas>
+
+<div class="page">
+  <header>
+    <p class="kicker">For You, Always</p>
+    <h1 class="title">Songs That Remind Me Of You</h1>
+    <p class="sub">Scratch to reveal</p>
+  </header>
+
+  <div class="stage">
+    <div class="nav-arrow left" id="btn-prev">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+    <div class="track" id="track"></div>
+    <div class="nav-arrow right" id="btn-next">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+  </div>
+
+  <div class="dots" id="dots"></div>
+</div>
+
+<div id="np-bar">
+  <div class="np-dot"></div>
+  <div class="np-info">
+    <div class="np-name" id="np-name">—</div>
+    <div class="np-artist" id="np-artist">—</div>
+  </div>
+</div>
+
+<div id="birthdayPopup" class="birthday-popup">
+
+    <div class="popup-card">
+
+        <span id="closePopup">&times;</span>
+
+        <h2>🎂 Happy Birthday!</h2>
+
+        <p>
+            Some people become friends.
+        </p>
+
+        <p>
+            Some people become unforgettable chapters.
+        </p>
+
+        <p class="highlight">
+            You are one of them. 💙
+        </p>
+
+        <p>
+            Thank you for every laugh,
+            every memory,
+            and every moment of support.
+        </p>
+
+        <p>
+            May this year bring you happiness,
+            success and endless smiles.
+        </p>
+
+        <p>
+            Stay awesome! ✨
+        </p>
+
+        <div class="signature">
+            – Your Friend, Gokul
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// EDIT YOUR 20 SONGS HERE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const SONGS = [
+  { name: "Song Title 1",  artist: "Artist Name", file: "Song-1.mp3" },
+  { name: "Song Title 2",  artist: "Artist Name", file: "Song-2.mp3" },
+  { name: "Song Title 3",  artist: "Artist Name", file: "Song-3.mp3" },
+  { name: "Song Title 4",  artist: "Artist Name", file: "Song-4.mp3" },
+  { name: "Song Title 5",  artist: "Artist Name", file: "Song-5.mp3" },
+  { name: "Song Title 6",  artist: "Artist Name", file: "Song-6.mp3" },
+  { name: "Song Title 7",  artist: "Artist Name", file: "Song-7.mp3" },
+  { name: "Song Title 8",  artist: "Artist Name", file: "Song-8.mp3" },
+  { name: "Song Title 9",  artist: "Artist Name", file: "Song-9.mp3" },
+  { name: "Song Title 10", artist: "Artist Name", file: "Song-10.mp3" },
+  { name: "Song Title 11", artist: "Artist Name", file: "Song-11.mp3" },
+  { name: "Song Title 12", artist: "Artist Name", file: "Song-12.mp3" },
+  { name: "Song Title 13", artist: "Artist Name", file: "Song-13.mp3" },
+  { name: "Song Title 14", artist: "Artist Name", file: "Song-14.mp3" },
+  { name: "Song Title 15", artist: "Artist Name", file: "Song-15.mp3" },
+  { name: "Song Title 16", artist: "Artist Name", file: "Song-16.mp3" },
+  { name: "Song Title 17", artist: "Artist Name", file: "Song-17.mp3" },
+  { name: "Song Title 18", artist: "Artist Name", file: "Song-18.mp3" },
+  { name: "Song Title 19", artist: "Artist Name", file: "Song-19.mp3" },
+  { name: "Song Title 20", artist: "Artist Name", file: "Song-20.mp3" },
+  { name: "Song Title 21", artist: "Artist Name", file: "Song-21.mp3" },
+  { name: "One Last Surprise🖤", artist: "From GOKUL", file: "" },
+
+];
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/* Stars */
+const starsCv = document.getElementById('stars-canvas');
+const sc = starsCv.getContext('2d');
+let stars = [];
+function initStars() {
+  starsCv.width = window.innerWidth;
+  starsCv.height = window.innerHeight;
+  stars = Array.from({length:120}, ()=>({
+    x:Math.random()*starsCv.width, y:Math.random()*starsCv.height,
+    r:Math.random()*1.5+0.2, a:Math.random(), sp:Math.random()*0.08+0.02
+  }));
+}
+initStars();
+window.addEventListener('resize', ()=>{ initStars(); layoutCards(); });
+(function drawStars(){
+  sc.clearRect(0,0,starsCv.width,starsCv.height);
+  sc.fillStyle='#fff';
+  stars.forEach(s=>{
+    s.y-=s.sp; if(s.y<0){s.y=starsCv.height;s.x=Math.random()*starsCv.width;}
+    s.a+=(Math.random()-0.5)*0.03; s.a=Math.max(0.05,Math.min(1,s.a));
+    sc.globalAlpha=s.a; sc.beginPath(); sc.arc(s.x,s.y,s.r,0,Math.PI*2); sc.fill();
+  });
+  sc.globalAlpha=1;
+  requestAnimationFrame(drawStars);
+})();
+
+/* Palettes */
+const PAL=[
+  ['#1a0835','#4a1080'],['#03122a','#0a3d7a'],['#2e0515','#7a1040'],
+  ['#04200e','#0f6030'],['#28180a','#6e4410'],['#1a1535','#3a2880'],
+  ['#2a0a20','#701050'],['#0a2520','#106050'],
+];
+
+/* Audio state */
+let curAudio=null,curBtn=null,curFill=null,curTime=null,curVinyl=null;
+const playI  =()=>`<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>`;
+const pauseI =()=>`<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>`;
+
+function stopAll(){
+  if(curAudio){curAudio.pause();curAudio.currentTime=0;}
+  if(curBtn){curBtn.classList.remove('on');curBtn.innerHTML=playI();}
+  if(curFill) curFill.style.width='0%';
+  if(curTime) curTime.textContent='0:00';
+  if(curVinyl) curVinyl.classList.remove('spinning');
+  curAudio=curBtn=curFill=curTime=curVinyl=null;
+  document.getElementById('np-bar').classList.remove('show');
+}
+
+/* Build cards */
+const track = document.getElementById('track');
+const dotsWrap = document.getElementById('dots');
+const cardData = [];
+let currentIndex = 0;
+
+SONGS.forEach((song,i)=>{
+  const wrap = document.createElement('div');
+  wrap.className='card-wrap';
+
+  const revealZone = document.createElement('div');
+  revealZone.className='reveal-zone';
+  
+  revealZone.innerHTML=`
+    <div class="track-badge">Track ${String(i+1).padStart(2,'0')}</div>
+    <div class="vinyl"><div class="vinyl-center"></div></div>
+    <div class="song-name">${song.name}</div>
+    <div class="song-artist">${song.artist}</div>`;
+
+  const playerZone = document.createElement('div');
+  playerZone.className='player-zone';
+  playerZone.innerHTML=`
+    <div class="mini-player">
+      <button class="play-btn">${playI()}</button>
+      <div class="prog-wrap"><div class="prog-fill"></div></div>
+      <div class="time-txt">0:00</div>
+    </div>`;
+
+  const scratchLayer = document.createElement('div');
+  scratchLayer.className='scratch-layer';
+  const cv = document.createElement('canvas');
+  cv.className='scratch-cv';
+  const hint = document.createElement('div');
+  hint.className='hint';
+  // hint.innerHTML=`<div class="hint-icon">✦</div><div class="hint-txt">Scratch</div>`;
+  scratchLayer.appendChild(cv);
+  scratchLayer.appendChild(hint);
+
+  wrap.appendChild(revealZone);
+  wrap.appendChild(playerZone);
+  wrap.appendChild(scratchLayer);
+  track.appendChild(wrap);
+
+  /* Dot */
+  const dot = document.createElement('div');
+  dot.className='dot' + (i===0?' active':'');
+  dot.addEventListener('click', ()=>goTo(i));
+  dotsWrap.appendChild(dot);
+
+  const entry = { wrap, cv, scratchLayer, hint, revealed:false, dot, index:i };
+  cardData.push(entry);
+
+  /* Draw overlay */
+  function drawOverlay(){
+    const r = wrap.getBoundingClientRect();
+
+    cv.width  = Math.round(r.width)  || 220;
+    cv.height = Math.round(r.height) || 220;
+    const ctx=cv.getContext('2d');
+    const [c1,c2]=PAL[i%PAL.length];
+    const g=ctx.createLinearGradient(0,0,cv.width,cv.height);
+    g.addColorStop(0,c1); g.addColorStop(1,c2);
+    ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.globalAlpha=0.15;
+    for(let x=8;x<cv.width;x+=16){
+      for(let y=8;y<cv.height;y+=16){
+        ctx.fillStyle='rgba(255,255,255,0.6)';
+        ctx.beginPath(); ctx.arc(x,y,1,0,Math.PI*2); ctx.fill();
+      }
+    }
+    ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(212,175,55,0.85)';
+    ctx.font='bold 13px Cinzel,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('💌 SCRATCH ME 💟', cv.width/2, cv.height*0.40);
+    ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.font='10px Cinzel,sans-serif';
+    ctx.fillText(`Song #${i+1}`, cv.width/2, cv.height*0.40+22);
+  }
+  entry.drawOverlay = drawOverlay;
+
+  /* Scratch logic */
+  let scratching=false;
+  function getXY(e){
+    const r=cv.getBoundingClientRect();
+    const src=e.touches?e.touches[0]:e;
+    return [(src.clientX-r.left)*(cv.width/r.width),(src.clientY-r.top)*(cv.height/r.height)];
+  }
+  function doScratch(x,y){
+    const ctx=cv.getContext('2d');
+    ctx.globalCompositeOperation='destination-out';
+    ctx.beginPath(); ctx.arc(x,y,32,0,Math.PI*2); ctx.fill();
+    checkDone();
+  }
+function checkDone(){
+    if(entry.revealed) return;
+
+    const ctx = cv.getContext('2d');
+    const d = ctx.getImageData(0,0,cv.width,cv.height).data;
+
+    let empty = 0;
+
+    for(let j=3;j<d.length;j+=4){
+        if(d[j] < 20) empty++;
+    }
+
+    if(empty/(cv.width*cv.height) > 0.45){
+
+        entry.revealed = true;
+
+        scratchLayer.style.pointerEvents = 'none';
+        cv.style.pointerEvents = 'none';
+        scratchLayer.remove();
+
+        dot.classList.add('opened');
+
+        wrap.style.animation = 'goldPop 0.8s ease';
+
+        setTimeout(()=>{
+            wrap.style.animation = '';
+
+            if(wrap.classList.contains('center')){
+                wrap.classList.add('bobbing');
+            }
+
+            // LAST CARD ONLY
+            if(i === SONGS.length - 1){
+                document.getElementById("birthdayPopup").style.display = "flex";
+            }
+
+        },850);
+    }
+}
+  cv.addEventListener('mousedown',  e=>{ if(!entry.isCenter) return; scratching=true;doScratch(...getXY(e));});
+  cv.addEventListener('mousemove',  e=>{ if(!entry.isCenter) return; if(scratching)doScratch(...getXY(e));});
+  cv.addEventListener('mouseup',    ()=>scratching=false);
+  cv.addEventListener('mouseleave', ()=>scratching=false);
+  cv.addEventListener('touchstart', e=>{ if(!entry.isCenter) return; e.preventDefault();scratching=true;doScratch(...getXY(e));},{passive:false});
+  cv.addEventListener('touchmove',  e=>{ if(!entry.isCenter) return; e.preventDefault();if(scratching)doScratch(...getXY(e));},{passive:false});
+  cv.addEventListener('touchend',   ()=>scratching=false);
+
+  /* Audio */
+  const audio   = new Audio(song.file);
+  const playBtn = playerZone.querySelector('.play-btn');
+  const fill    = playerZone.querySelector('.prog-fill');
+  const progW   = playerZone.querySelector('.prog-wrap');
+  const timeTxt = playerZone.querySelector('.time-txt');
+  const vinyl   = revealZone.querySelector('.vinyl');
+
+  playBtn.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    if(!entry.isCenter) return;
+    if(curAudio && curAudio!==audio) stopAll();
+    if(audio.paused){
+      const playPromise = audio.play();
+      playBtn.classList.add('on'); playBtn.innerHTML=pauseI();
+      vinyl.classList.add('spinning');
+      curAudio=audio; curBtn=playBtn; curFill=fill; curTime=timeTxt; curVinyl=vinyl;
+      document.getElementById('np-name').textContent=song.name;
+      document.getElementById('np-artist').textContent=song.artist;
+      document.getElementById('np-bar').classList.add('show');
+      if(playPromise && typeof playPromise.catch === 'function'){
+        playPromise.catch((err)=>{
+          console.warn('Audio failed to play:', song.file, err);
+          playBtn.classList.remove('on'); playBtn.innerHTML=playI();
+          vinyl.classList.remove('spinning');
+          document.getElementById('np-bar').classList.remove('show');
+          if(curAudio===audio){ curAudio=curBtn=curFill=curTime=curVinyl=null; }
+        });
+      }
+    } else {
+      audio.pause();
+      playBtn.classList.remove('on'); playBtn.innerHTML=playI();
+      vinyl.classList.remove('spinning');
+    }
+  });
+  audio.addEventListener('error',()=>{
+    console.warn('Audio file not found or unsupported:', song.file);
+    playBtn.classList.remove('on'); playBtn.innerHTML=playI();
+    vinyl.classList.remove('spinning');
+    document.getElementById('np-bar').classList.remove('show');
+    if(curAudio===audio){ curAudio=curBtn=curFill=curTime=curVinyl=null; }
+  });
+  audio.addEventListener('timeupdate',()=>{
+    if(!audio.duration) return;
+    fill.style.width=(audio.currentTime/audio.duration*100)+'%';
+    const m=Math.floor(audio.currentTime/60);
+    const s=String(Math.floor(audio.currentTime%60)).padStart(2,'0');
+    timeTxt.textContent=`${m}:${s}`;
+  });
+  audio.addEventListener('ended',()=>{
+    playBtn.classList.remove('on'); playBtn.innerHTML=playI();
+    vinyl.classList.remove('spinning');
+    fill.style.width='0%'; timeTxt.textContent='0:00';
+    document.getElementById('np-bar').classList.remove('show');
+    curAudio=curBtn=curFill=curTime=curVinyl=null;
+  });
+  progW.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(!entry.isCenter || !audio.duration) return;
+    const r=progW.getBoundingClientRect();
+    audio.currentTime=((e.clientX-r.left)/r.width)*audio.duration;
+  });
+
+  entry.audio = audio;
+  entry.playBtn = playBtn;
+  entry.vinyl = vinyl;
+});
+
+/* Carousel layout */
+function layoutCards(){
+  cardData.forEach((entry,i)=>{
+    let offset = i - currentIndex;
+    // wrap-around for closest path
+    if(offset > SONGS.length/2) offset -= SONGS.length;
+    if(offset < -SONGS.length/2) offset += SONGS.length;
+
+    entry.isCenter = (offset === 0);
+    const wrap = entry.wrap;
+    wrap.classList.toggle('center', entry.isCenter);
+    wrap.classList.remove('bobbing');
+
+    let tx, scale, opacity, zIndex, filter, rotateY;
+
+    if (Math.abs(offset) > 2) {
+      tx = offset > 0 ? 500 : -500;
+      scale = 0.5; opacity = 0; zIndex = 0; filter='blur(8px)'; rotateY = 0;
+    } else {
+      tx = offset * 230;
+      scale = offset === 0 ? 1 : 0.78;
+      opacity = offset === 0 ? 1 : (Math.abs(offset)===1 ? 0.55 : 0.2);
+      zIndex = 10 - Math.abs(offset);
+      filter = offset === 0 ? 'blur(0px) brightness(1)' : 'blur(2px) brightness(0.5)';
+      rotateY = offset * -10;
+    }
+
+    wrap.style.transform = `translateX(${tx}px) scale(${scale}) rotateY(${rotateY}deg)`;
+    wrap.style.opacity = opacity;
+    wrap.style.zIndex = zIndex;
+    wrap.style.filter = filter;
+    wrap.style.pointerEvents = entry.isCenter ? 'auto' : 'none';
+
+    // redraw overlay if not yet revealed and becomes visible/center
+    if (!entry.revealed && (offset === 0) && entry.cv.width === 0 || (!entry.revealed && entry.cv.dataset.drawn !== '1')) {
+      entry.drawOverlay();
+      entry.cv.dataset.drawn = '1';
+    }
+
+    if (entry.isCenter && entry.revealed) {
+      wrap.classList.add('bobbing');
+    }
+  });
+
+  cardData.forEach((entry,i)=>{
+    entry.dot.classList.toggle('active', i===currentIndex);
+  });
+}
+
+function goTo(index){
+  if(index < 0) index = SONGS.length - 1;
+  if(index >= SONGS.length) index = 0;
+  currentIndex = index;
+  layoutCards();
+}
+
+document.getElementById('btn-prev').addEventListener('click', ()=>goTo(currentIndex-1));
+document.getElementById('btn-next').addEventListener('click', ()=>goTo(currentIndex+1));
+
+// Swipe support
+let touchStartX = 0;
+document.querySelector('.stage').addEventListener('touchstart', e=>{ touchStartX = e.touches[0].clientX; });
+document.querySelector('.stage').addEventListener('touchend', e=>{
+  const diff = e.changedTouches[0].clientX - touchStartX;
+  if(Math.abs(diff) > 50) {
+    if(diff < 0) goTo(currentIndex+1); else goTo(currentIndex-1);
+  }
+});
+
+// Draw all overlays once sized, then layout
+requestAnimationFrame(()=>{
+  cardData.forEach(entry=>{ entry.drawOverlay(); entry.cv.dataset.drawn='1'; });
+  layoutCards();
+});
+
+document
+.getElementById("closePopup")
+.addEventListener("click",()=>{
+
+    document.getElementById("birthdayPopup").style.display = "none";
+
+});
+</script>
+</body>
+</html>

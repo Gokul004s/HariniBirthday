@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Harini🖤</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+     <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Montserrat:wght@200;300;400;600&display=swap"
+        rel="stylesheet">
+
+    <!-- GSAP for animations -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
+
+    <!-- Three.js for 3D Cake -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+</head>
+<body>
+
+    <div id="musicBtn">
+    🎵 PLAY MUSIC
+</div>
+    <audio id="bgMusic" loop>
+    <source src="Remo-birthday-part1.mp3" type="audio/mp3">
+</audio>
+    <!-- COUNTER -->
+     <section class="container">
+        <div class="countdown-display">
+            <!-- Pulse circles -->
+            <div class="pulse-3"></div>
+            <div class="pulse-2"></div>
+            <div class="pulse-1"></div>
+            
+            <!-- Numbers -->
+            <div class="number-3">3</div>
+            <div class="number-2">2</div>
+            <div class="number-1">1</div>
+            
+            <!-- Surprise -->
+            <div class="surprise">🎉LETS GO!🎉</div>
+        </div>
+        
+        <!-- <div class="title">✨ Get Ready! ✨</div> --> 
+    </section>
+
+<div class="box">
+
+  <div class="line1">
+    <span>A</span>
+    <span>R</span>
+    <span>E</span>
+    <span>&nbsp;</span>
+    <span>Y</span>
+    <span>O</span>
+    <span>U</span>
+    <span>&nbsp;</span>
+    <span>R</span>
+    <span>E</span>
+    <span>A</span>
+    <span>D</span>
+    <span>Y</span>
+  </div>
+  <br>
+  <div class="line2">
+    <span>F</span>
+    <span>O</span>
+    <span>R</span>
+    <span>&nbsp;</span>
+    <span>T</span>
+    <span>H</span>
+    <span>E</span>
+    <span>&nbsp;</span>
+    <span>S</span>
+    <span>U</span>
+    <span>R</span>
+    <span>P</span>
+    <span>R</span>
+    <span>I</span>
+    <span>S</span>
+    <span>E</span>
+    <span>?</span>
+  </div>
+
+</div>
+  
+
+  
+</div>
+<audio id="yesMusic" loop>
+    <source src="songs/Remo-birthday-part2.mp3" type="audio/mp3">
+</audio>
+ <button id="yesBtn">YES 💖</button>
+
+<div id="message1">
+   Yayyy 🎉<br>
+   Let's Start The Surprise 💖
+</div>
+<div id="message2">
+
+   <div class="text">
+      I AM SORRY🥹I AM NOT NEAR YOU 💖
+      <br><br>
+      BUT I AM SENDING YOU SOMETHING 🎁
+      <br><br>
+
+      Click The Arrow
+   </div>
+
+   <button id="nextBtn">➡</button>
+
+</div>
+<!-- LETTER SCENE -->
+<section class="scene-one" id="sceneOne">
+
+    <div class="letter-image" id="openLetter">
+        <div class="sparkle s1">✨</div>
+<div class="sparkle s2">✨</div>
+<div class="sparkle s3">✨</div>
+<div class="sparkle s4">✨</div>
+
+        <div class="animated-mail">
+
+            <div class="back-fold"></div>
+
+            <div class="letter">
+
+                <div class="letter-content">
+
+                    <h2>Dear Harini 🖤</h2>
+
+                    <p>A Letter Written Just For You 💌</p>
+
+                </div>
+
+            </div>
+
+            <div class="top-fold"></div>
+            <div class="body"></div>
+            <div class="left-fold"></div>
+
+        </div>
+
+        <div class="shadow"></div>
+
+    </div>
+    <div class="tap-hint">
+    💌 Open Your Birthday Letter 💌
+</div>
+
+</section>
+
+<!-- LETTER MUSIC -->
+<audio id="letterMusic" loop>
+    <source src="songs/Remo-birthday-part3.mp3" type="audio/mp3">
+</audio>
+<!-- SECOND PAGE -->
+<section class="scene-two" id="sceneTwo">
+
+    <div class="message-box">
+
+        <p class="small-text">
+            FOR YOU 💖
+        </p>
+
+        <h1>
+            Happy Birthday Harini ✨
+        </h1>
+
+        <p class="desc">
+            Every moment with you feels magical.
+            This surprise is made with love only for you 💌
+        </p>
+
+        <button class="btn-start" id="aduthuBtn">
+            Continue 🎂
+        </button>
+
+    </div>
+
+</section>
+
+ <!-- Global Canvas for Background Effects -->
+    <div class="ambient-aurora"></div>
+    <canvas id="global-canvas"></canvas>
+
+    <!-- Scene 0: Intro Loader -->
+    <section id="scene-intro" class="scene-container">
+        <div class="content-wrapper glass-panel">
+            <p class="kicker-text">A Special Surprise Awaits</p>
+            <h1 class="title-cinematic font-cinzel">This Is All About You</h1>
+            <p class="subtitle-elegant">An unforgettable cinematic birthday experience.</p>
+
+            <div id="loading-area" class="w-full flex flex-col items-center mt-8">
+                <div class="w-64 h-1 bg-gray-800 rounded-full overflow-hidden">
+                    <div id="loading-bar"
+                        class="h-full bg-gradient-to-r from-yellow-600 via-yellow-200 to-yellow-600 w-0"></div>
+                </div>
+            </div>
+
+            <button id="btn-start" class="btn-luxury mt-8 hidden">Begin Experience</button>
+        </div>
+    </section>
+
+    <!-- Scene 1: Balloons -->
+    <section id="scene-balloons" class="scene-container">
+        <div class="content-wrapper relative z-20 pointer-events-none">
+            <h1 class="title-cinematic font-cinzel text-5xl">Happy Birthday Harini</h1>
+            <p class="subtitle-elegant">Pop the balloons to celebrate.</p>
+            <!-- Button hidden properly to block interaction until ready -->
+            <button id="btn-continue-balloons"
+                class="btn-luxury mt-8 opacity-0 pointer-events-none transform translate-y-4">Continue The
+                Celebration</button>
+        </div>
+        <div class="balloon-stage" id="balloon-stage">
+            <!-- Balloons generated via JS -->
+        </div>
+    </section>
+
+    <!-- Scene 2: Gallery -->
+    <section id="scene-gallery" class="scene-container">
+        <div class="content-wrapper relative z-30">
+            <h1 class="title-cinematic font-cinzel text-4xl md:text-5xl">Beautiful Memories</h1>
+            <p class="subtitle-elegant">Moments to remember ✨</p>
+        </div>
+
+        <div class="gallery-stage mt-2 relative w-full flex items-center justify-center">
+            <button class="nav-arrow absolute left-4 md:left-12" id="btn-prev">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+            </button>
+
+            <div class="gallery-track" id="gallery-track">
+                <!-- Cards injected via JS -->
+            </div>
+
+            <button class="nav-arrow absolute right-4 md:right-12" id="btn-next">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="relative z-40 mt-8">
+            <button id="btn-gallery-continue"
+                class="btn-luxury opacity-0 pointer-events-none transform translate-y-4">Continue</button>
+        </div>
+    </section>
+
+    <!-- Scene 3: Cake Scene -->
+    <section id="scene-cake" class="scene-container">
+        <div class="content-wrapper relative z-20 pointer-events-none">
+            <h1 class="title-cinematic font-cinzel">Make A Wish</h1>
+            <p class="subtitle-elegant">Tap the flames to blow out the candles.</p>
+        </div>
+
+        <div id="cake-canvas-container"></div>
+
+        <div class="relative z-40 mt-6">
+            <button id="btn-cake-continue"
+                class="btn-luxury opacity-0 pointer-events-none transform translate-y-4">Continue The
+                Celebration</button>
+        </div>
+    </section>
+
+    <!-- Scene 4: Puzzle Scene -->
+    <section id="scene-puzzle" class="scene-container">
+        <div class="content-wrapper relative z-20 pointer-events-none">
+            <p class="subtitle-elegant">Complete the picture to unlock the surprise.</p>
+        </div>
+        <div class="puzzle-stage relative flex flex-col items-center">
+            <div class="puzzle-grid" id="puzzle-grid">
+                <!-- Pieces injected via JS -->
+            </div>
+        </div>
+        <div class="relative z-40 mt-10">
+            <button id="btn-puzzle-continue"
+                class="btn-luxury opacity-0 pointer-events-none transform translate-y-4">Unlock Surprise</button>
+        </div>
+    </section>
+
+    <!-- Scene 5: Gift Scene -->
+    <section id="scene-gift" class="scene-container">
+        <div class="content-wrapper pointer-events-none">
+            <h1 class="title-cinematic font-cinzel text-4xl md:text-5xl">A Special Gift For You</h1>
+            <p class="subtitle-elegant">Because today is your day. Tap to open.</p>
+        </div>
+        <div class="gift-stage" id="gift-box">
+            <div class="gift-base">
+                <div class="ribbon ribbon-v"></div>
+                <div class="ribbon ribbon-h"></div>
+            </div>
+            <div class="gift-lid" id="gift-lid">
+                <div class="ribbon ribbon-v"></div>
+                <div class="ribbon ribbon-h"></div>
+            </div>
+            <div class="gift-message" id="gift-message">
+                <div class="glass-panel p-6 text-center w-64 absolute -top-10">
+                    <h3 class="font-cinzel text-xl text-[var(--gold-primary)] mb-2">You Are Amazing</h3>
+                    <p class="text-xs font-light leading-relaxed text-gray-300">Wishing you a year filled with elegance,
+                        joy, and endless success.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scene 6: Finale -->
+    <section id="scene-finale" class="scene-container">
+        <div class="content-wrapper pointer-events-none">
+            <p class="kicker-text">Happy Birthday</p>
+            <h1 class="title-cinematic font-cinzel" style="font-size: clamp(3rem, 8vw, 7rem);">May Your Life<br>Shine
+                Brighter<br>Than These Stars</h1>
+                <button id="btn-finale" class="btn-luxury mt-8 pointer-events-auto transform translate-y-4">
+    One Last Surprise Awaits!😁
+</button>
+<div id="transition-overlay"></div>
+        </div>
+        
+    </section>
+
+</body>
+</html>
